@@ -2,7 +2,7 @@
   "name": "redline",
   "displayName": "Redline",
   "description": "Review everything Copilot changed in one unified diff tab, then jump to any file to refine with Copilot",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "publisher": "redline",
   "engines": {
     "vscode": "^1.86.0"
