@@ -1,0 +1,307 @@
+{
+  "name": "redline",
+  "displayName": "Redline",
+  "description": "Review everything Copilot changed in one unified diff tab, then jump to any file to refine with Copilot",
+  "version": "0.1.0",
+  "publisher": "redline",
+  "engines": {
+    "vscode": "^1.86.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "reviewAgent.openAllChanges",
+        "title": "Open All Changes",
+        "category": "Redline",
+        "icon": "$(diff-multiple)"
+      },
+      {
+        "command": "reviewAgent.openInline",
+        "title": "Open Inline Review",
+        "category": "Redline"
+      },
+      {
+        "command": "reviewAgent.openSideBySide",
+        "title": "Open Side-by-Side Review",
+        "category": "Redline"
+      },
+      {
+        "command": "reviewAgent.toggleSideBySide",
+        "title": "Toggle Side-by-Side",
+        "category": "Redline",
+        "icon": "$(split-horizontal)"
+      },
+      {
+        "command": "reviewAgent.nextChange",
+        "title": "Next Change",
+        "category": "Redline",
+        "icon": "$(arrow-down)"
+      },
+      {
+        "command": "reviewAgent.prevChange",
+        "title": "Previous Change",
+        "category": "Redline",
+        "icon": "$(arrow-up)"
+      },
+      {
+        "command": "reviewAgent.nextFile",
+        "title": "Next Changed File",
+        "category": "Redline",
+        "icon": "$(chevron-down)"
+      },
+      {
+        "command": "reviewAgent.prevFile",
+        "title": "Previous Changed File",
+        "category": "Redline",
+        "icon": "$(chevron-up)"
+      },
+      {
+        "command": "reviewAgent.collapseAll",
+        "title": "Collapse All",
+        "category": "Redline",
+        "icon": "$(fold)"
+      },
+      {
+        "command": "reviewAgent.expandAll",
+        "title": "Expand All",
+        "category": "Redline",
+        "icon": "$(unfold)"
+      },
+      {
+        "command": "reviewAgent.expandGap",
+        "title": "Expand Gap",
+        "category": "Redline"
+      },
+      {
+        "command": "reviewAgent.expandGapAll",
+        "title": "Expand Gap All",
+        "category": "Redline"
+      },
+      {
+        "command": "reviewAgent.collapseGap",
+        "title": "Collapse Gap",
+        "category": "Redline"
+      },
+      {
+        "command": "reviewAgent.focusChangedFiles",
+        "title": "Focus Changed Files",
+        "category": "Redline"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "reviewAgent",
+          "title": "Redline",
+          "icon": "$(diff)"
+        }
+      ]
+    },
+    "views": {
+      "reviewAgent": [
+        {
+          "id": "reviewAgent.changedFiles",
+          "name": "Changed Files"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "reviewAgent.openAllChanges",
+          "when": "view == reviewAgent.changedFiles",
+          "group": "navigation@1"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "reviewAgent.openInline",
+          "when": "view == reviewAgent.changedFiles && viewItem == changedFile",
+          "group": "inline@1"
+        },
+        {
+          "command": "reviewAgent.openSideBySide",
+          "when": "view == reviewAgent.changedFiles && viewItem == changedFile",
+          "group": "inline@2"
+        },
+        {
+          "command": "reviewAgent.collapseAll",
+          "when": "view == reviewAgent.changedFiles && viewItem == changedFile",
+          "group": "collapse@1"
+        },
+        {
+          "command": "reviewAgent.expandAll",
+          "when": "view == reviewAgent.changedFiles && viewItem == changedFile",
+          "group": "collapse@2"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "reviewAgent.prevChange",
+          "when": "reviewAgent.hasActiveFile",
+          "group": "navigation@1"
+        },
+        {
+          "command": "reviewAgent.nextChange",
+          "when": "reviewAgent.hasActiveFile",
+          "group": "navigation@2"
+        },
+        {
+          "command": "reviewAgent.prevFile",
+          "when": "reviewAgent.isReviewing",
+          "group": "navigation@3"
+        },
+        {
+          "command": "reviewAgent.nextFile",
+          "when": "reviewAgent.isReviewing",
+          "group": "navigation@4"
+        },
+        {
+          "command": "reviewAgent.toggleSideBySide",
+          "when": "reviewAgent.hasActiveFile",
+          "group": "navigation@5"
+        },
+        {
+          "command": "reviewAgent.collapseAll",
+          "when": "reviewAgent.hasActiveFile",
+          "group": "navigation@6"
+        },
+        {
+          "command": "reviewAgent.expandAll",
+          "when": "reviewAgent.hasActiveFile",
+          "group": "navigation@7"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Redline",
+      "properties": {
+        "reviewAgent.baselineMode": {
+          "type": "string",
+          "enum": [
+            "git",
+            "snapshot"
+          ],
+          "default": "git",
+          "description": "Baseline source for diff comparison"
+        },
+        "reviewAgent.gitCompare": {
+          "type": "string",
+          "enum": [
+            "workingTreeVsHead",
+            "workingTreeVsIndex"
+          ],
+          "default": "workingTreeVsHead",
+          "description": "Git comparison mode"
+        },
+        "reviewAgent.contextLines": {
+          "type": "number",
+          "default": 3,
+          "minimum": 0,
+          "description": "Unchanged lines shown around each change"
+        },
+        "reviewAgent.expandStepLines": {
+          "type": "number",
+          "default": 20,
+          "minimum": 1,
+          "description": "Lines revealed per Show more click"
+        },
+        "reviewAgent.collapseThreshold": {
+          "type": "number",
+          "default": 8,
+          "minimum": 1,
+          "description": "Minimum gap size before auto-folding"
+        },
+        "reviewAgent.debounceMs": {
+          "type": "number",
+          "default": 300,
+          "minimum": 50,
+          "description": "Re-diff delay in milliseconds"
+        },
+        "reviewAgent.maxFileSizeMb": {
+          "type": "number",
+          "default": 5,
+          "minimum": 1,
+          "description": "Maximum file size for snapshot mode (MB)"
+        },
+        "reviewAgent.watchExclude": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Extra glob patterns to exclude from snapshot watching"
+        },
+        "reviewAgent.defaultOpenMode": {
+          "type": "string",
+          "enum": [
+            "inline",
+            "sideBySide"
+          ],
+          "default": "inline",
+          "description": "Default mode when opening a single changed file from the tree (unified review uses the multi-file diff editor)"
+        },
+        "reviewAgent.autoOpenUnifiedReview": {
+          "type": "boolean",
+          "default": true,
+          "description": "When a review starts (including auto-start on workspace open), open all changes in the unified multi-file diff tab"
+        }
+      }
+    },
+    "keybindings": [
+      {
+        "command": "reviewAgent.nextChange",
+        "key": "alt+]",
+        "when": "reviewAgent.isReviewing"
+      },
+      {
+        "command": "reviewAgent.prevChange",
+        "key": "alt+[",
+        "when": "reviewAgent.isReviewing"
+      },
+      {
+        "command": "reviewAgent.nextFile",
+        "key": "alt+shift+]",
+        "when": "reviewAgent.isReviewing"
+      },
+      {
+        "command": "reviewAgent.prevFile",
+        "key": "alt+shift+[",
+        "when": "reviewAgent.isReviewing"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "node esbuild.js",
+    "watch": "node esbuild.js --watch",
+    "test": "node --test --require ts-node/register test/diffEngine.test.ts test/unifiedReview.test.ts",
+    "package": "vsce package --no-dependencies",
+    "publish": "vsce publish --no-dependencies",
+    "release": "semantic-release"
+  },
+  "devDependencies": {
+    "@semantic-release/exec": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^11.0.1",
+    "@semantic-release/npm": "^12.0.1",
+    "@types/diff": "^7.0.2",
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.86.0",
+    "@vscode/vsce": "^2.24.0",
+    "esbuild": "^0.20.0",
+    "semantic-release": "^24.2.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "diff": "^7.0.0"
+  }
+}

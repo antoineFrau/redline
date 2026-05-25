@@ -1,0 +1,1 @@
+export { ReviewFoldingProvider } from './decorationManager';
