@@ -27,8 +27,7 @@
       {
         "assets": [
           {
-            "path": "*.vsix",
-            "label": "VSIX"
+            "path": "*.vsix"
           }
         ]
       }
